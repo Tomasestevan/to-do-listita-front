@@ -11,47 +11,14 @@
         <div class="container">
           <div class="row">
             <div class="col" id="requestedColum">
-              <span class="sub">Requested</span>
-              <div class="card" style="width: 20rem;">
-                <div class="card-body">
-                  <button type="button" class="cruz">X</button>
-                  <p class="card-title">
-                    Buscar laburo
-                  </p>
-                  <button type="button" class="btn btn-outline-dark">In Progress</button>
-                </div>
-              </div>
-              <div> <button type="button" class="btn btn-outline-dark" onclick="agregarCard()">+</button> </div>
+              <span id="requestedTitle" class="sub">Requested</span>
+              <div id="addButtonContainer" > <button type="button" class="btn btn-outline-dark" onclick="agregarCard()">+</button> </div>
             </div>
             <div class="col" id="inProgressColum">
-             <span class="sub">In Progress</span>
-             <div class="card" style="width: 20rem;">
-              <div class="card-body">
-                <p class="card-title">
-                  La Mañanera
-                </p>
-                <button type="button" class="btn btn-outline-dark">Done</button>
-              </div>
-            </div>
+             <span id="inProgressTitle" class="sub">In Progress</span>
             </div>
             <div class="col" id="doneColum">
-              <span class="sub">Done</span>
-              <div class="card" style="width: 20rem;">
-                <div class="card-body">
-                  <p class="card-title">
-                    Desayunar Termidor con el tetu de pode
-                  </p>
-                  <button type="button" class="btn btn-outline-dark">Delete</button>
-                </div>
-              </div>
-              <div class="card" style="width: 20rem;">
-                <div class="card-body">
-                  <p class="card-title">
-                    Pedirle Perdon a Gaston Fasito
-                  </p>
-                  <button type="button" class="btn btn-outline-dark">Delete</button>
-                </div>
-              </div>
+              <span id="doneTitle" class="sub">Done</span>
             </div>
           </div>
         </div>
