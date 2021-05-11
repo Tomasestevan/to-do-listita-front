@@ -22,6 +22,7 @@ function getapis() {
 function addCard(card) {       //este es del get que te trae las cartas del back
     var cardDiv = document.createElement("div")
     cardDiv.className = "card"
+    cardDiv.id = card.Nombre
     var cardBody = document.createElement("div")
     cardBody.className = "card-body"
     var cardCruz = document.createElement("button")
@@ -40,14 +41,17 @@ function addCard(card) {       //este es del get que te trae las cartas del back
         case "In Progress": 
         cardButton.innerText = "Done"
         document.getElementById("tituloDeI").after(cardDiv)
+        cardButton.addEventListener("click", (e) => pasar(e,"Done"), false)
             break;
         case "Requested":
             cardButton.innerText = "In Progress"
             document.getElementById("tituloDeR").after(cardDiv)
+            cardButton.addEventListener("click", (e) => pasar(e,"In Progress"), false)
             break;
         case "Done":
-            cardButton.innerText = "Delete"
-            document.getElementById("tituloDeD").after(cardDiv)    
+            cardButton.innerText = "Reset"
+            document.getElementById("tituloDeD").after(cardDiv)
+            cardButton.addEventListener("click", (e) => pasar(e,"Requested"), false)    
     
         default:
             break;
@@ -61,6 +65,7 @@ function addCard(card) {       //este es del get que te trae las cartas del back
 function agregarCard(){      //y este es el que te agrega una nueva carta en la pagina
     var cardDiv = document.createElement("div")
     cardDiv.className = "card"
+    cardDiv.id = "nuevaCard"
     var cardBody = document.createElement("div")
     cardBody.className = "card-body"
     var cardCruz = document.createElement("button")
@@ -75,12 +80,14 @@ function agregarCard(){      //y este es el que te agrega una nueva carta en la 
     cardButton.type = "button"
     cardButton.className = "btn btn-outline-dark"
     cardButton.innerText = "Agregar"
+    cardButton.onclick = postCard
     var inputDiv = document.createElement("div")
     inputDiv.className = "input-group"
     var input = document.createElement("input")
     input.className = "form-control"
     input.type = "text"
     input.placeholder = "Nombre"
+    input.id = "inputId"
     document.getElementById("requestedColum").insertBefore(cardDiv, document.getElementById("contenedorButton")) // primer parametro insertar eso antes del segundo
     cardDiv.appendChild(cardBody)
     cardBody.appendChild(cardCruz)
@@ -111,5 +118,54 @@ function deletecard(unId) {
         //lo que ocurre si anduvo bien el fetch
     })
     .catch(err => console.log(err));
+}
+function postCard(){
+    var inputText = document.getElementById("inputId").value
+    if (inputText == ""){
+        alert("Tiene que darle un nombre señor")
+    }else{
+    fetch("http://localhost:9047/tarea", {
+        method: 'POST',
+        body: JSON.stringify({
+            "Id": Math.floor(Math.random() * 1000) + 1,
+            "Nombre": inputText,
+            "Estado": "Requested"
+        })
+    })
+    .then((res) => {
+        console.log(res)
+        document.location.reload()
+        //lo que ocurre si anduvo bien el fetch
+    })
+    .catch(err => console.log(err));
+}
+}
+function cancelAdd(){
+    document.getElementById("nuevaCard").remove()
+    changeAdd()
+}
+function pasar(event,columna){
+    var card = event.currentTarget.offsetParent
+    card.remove()
+    event.currentTarget.removeEventListener("click",pasar)
+    switch (columna) {
+        case "Requested":
+            document.getElementById("requestedColum").insertBefore(card, document.getElementById("contenedorButton"))
+            event.currentTarget.innerText = "In Progress"
+            event.currentTarget.addEventListener("click", (e) => pasar(e,"In Progress"), false)
+            break;
+            case "In Progress":
+                document.getElementById("inProgressColum").appendChild(card)
+                event.currentTarget.innerText = "Done"
+                event.currentTarget.addEventListener("click", (e) => pasar(e,"Done"), false)
+                break;
+            case "Done":
+                document.getElementById("doneColum").appendChild(card)
+                event.currentTarget.innerText = "Reset"
+                event.currentTarget.addEventListener("click", (e) => pasar(e,"Requested"), false)
+                break;
+        default:
+            break;
+    }
 }
 getapis()
