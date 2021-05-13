@@ -1,4 +1,4 @@
-
+let cards = []
 
 function getapis() {
     fetch("http://localhost:9047/tareas")
@@ -9,6 +9,7 @@ function getapis() {
             res.json().then((data) => {
                 data.forEach(card => {
                     addCard(card)
+                    cards.push(card)
 
                 });
 
@@ -41,17 +42,17 @@ function addCard(card) {       //este es del get que te trae las cartas del back
         case "In Progress": 
         cardButton.innerText = "Done"
         document.getElementById("tituloDeI").after(cardDiv)
-        cardButton.addEventListener("click", (e) => pasar(e,"Done"), false)
+        cardButton.addEventListener("click", (e) => pasar(e,"Done",card.Id), false)
             break;
         case "Requested":
             cardButton.innerText = "In Progress"
             document.getElementById("tituloDeR").after(cardDiv)
-            cardButton.addEventListener("click", (e) => pasar(e,"In Progress"), false)
+            cardButton.addEventListener("click", (e) => pasar(e,"In Progress",card.Id), false)
             break;
         case "Done":
             cardButton.innerText = "Reset"
             document.getElementById("tituloDeD").after(cardDiv)
-            cardButton.addEventListener("click", (e) => pasar(e,"Requested"), false)    
+            cardButton.addEventListener("click", (e) => pasar(e,"Requested",card.Id), false)    
     
         default:
             break;
@@ -122,7 +123,8 @@ function deletecard(unId) {
 function postCard(){
     var inputText = document.getElementById("inputId").value
     if (inputText == ""){
-        alert("Tiene que darle un nombre señor")
+        $('#myModal').modal('show')
+        //alert("Tiene que darle un nombre señor")
     }else{
     fetch("http://localhost:9047/tarea", {
         method: 'POST',
@@ -144,8 +146,9 @@ function cancelAdd(){
     document.getElementById("nuevaCard").remove()
     changeAdd()
 }
-function pasar(event,columna){
+function pasar(event,columna,id){
     var card = event.currentTarget.offsetParent
+    var estado = "Requested"
     card.remove()
     event.currentTarget.removeEventListener("click",pasar)
     switch (columna) {
@@ -158,14 +161,27 @@ function pasar(event,columna){
                 document.getElementById("inProgressColum").appendChild(card)
                 event.currentTarget.innerText = "Done"
                 event.currentTarget.addEventListener("click", (e) => pasar(e,"Done"), false)
+                estado = "In Progress"
                 break;
             case "Done":
                 document.getElementById("doneColum").appendChild(card)
                 event.currentTarget.innerText = "Reset"
                 event.currentTarget.addEventListener("click", (e) => pasar(e,"Requested"), false)
+                estado = "Done"
                 break;
         default:
             break;
     }
+    fetch("http://localhost:9047/putTarea", {
+        method: 'POST',
+        body: JSON.stringify({
+            "Id": id,
+            "Estado": estado
+        })
+    })
+    .then((res) => {
+        console.log(res)
+    })
+    .catch(err => console.log(err));
 }
 getapis()
